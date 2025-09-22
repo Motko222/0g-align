@@ -6,8 +6,8 @@ read -p "Sure? " c
 case $c in y|Y) ;; *) exit ;; esac
 
 #install binary
-mkdir -p /root/0g-alignment-node
-cd /root/0g-alignment-node
+mkdir -p /root/$folder
+cd /root/$folder
 wget https://github.com/0gfoundation/alignment-node-release/releases/latest/0g-alignment-node
 chmod +x 0g-alignment-node
 
