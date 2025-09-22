@@ -10,10 +10,9 @@ Wants=network-online.target
 
 [Service]
 EnvironmentFile=/root/scripts/$folder/env
-Environment=""
 User=root
 Group=root
-ExecStart=$folder
+ExecStart=0g-alignment-node start
 Restart=always
 RestartSec=30
 LimitNOFILE=65536
