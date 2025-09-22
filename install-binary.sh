@@ -1,13 +1,15 @@
+#!/bin/bash
 path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
 folder=$(echo $path | awk -F/ '{print $NF}')
-source $path/env
 
 read -p "Sure? " c
 case $c in y|Y) ;; *) exit ;; esac
 
 #install binary
-cd /root
-# add install cmds here
+mkdir -p /root/0g-alignment-node
+cd /root/0g-alignment-node
+wget https://github.com/0gfoundation/alignment-node-release/releases/latest/0g-alignment-node
+chmod +x 0g-alignment-node
 
 #create env
 cd $path
