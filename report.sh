@@ -9,7 +9,7 @@ source $path/env
 version=$()
 service=$(sudo systemctl status $folder --no-pager | grep "active (running)" | wc -l)
 errors=$(journalctl -u $folder.service --since "1 hour ago" --no-hostname -o cat | grep -c -E "rror|ERR")
-last=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Received CheckNodeOperation request" | cut -d \" -f 1)
+last=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Received CheckNodeOperation request" | tail -1 | cut -d "\"" -f 2)
 
 status="ok" && message=""
 [ $errors -gt 500 ] && status="warning" && message="errors=$errors";
