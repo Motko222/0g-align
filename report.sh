@@ -12,9 +12,6 @@ errors=$(journalctl -u $folder.service --since "1 hour ago" --no-hostname -o cat
 last=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Received CheckNodeOperation request" | tail -1 | cut -d "\"" -f 2)
 wallet=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Verified identity result" | tail -1 | awk -F "address=" '{print $NF}')
 
-timestamp=$(date -d "$last" +%s)
-now=$(date +%s)
-
 # Calculate difference in seconds
 diff=$(( $(date +%s) - $(date -d "$last" +%s) ))
 
@@ -26,8 +23,8 @@ else
   last_ago="$(( diff / 86400 )) days ago"
 fi
 
-
 status="ok" && message=""
+[ $diff -gt 86400 ] && status="warning" && message="no checkin";
 [ $errors -gt 500 ] && status="warning" && message="errors=$errors";
 [ $service -ne 1 ] && status="error" && message="service not running";
 
