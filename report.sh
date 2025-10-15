@@ -23,9 +23,9 @@ else
   last_ago="$(( diff / 86400 )) days ago"
 fi
 
-status="ok" && message=""
-[ $diff -gt 86400 ] && status="warning" && message="no checkin";
-[ $errors -gt 500 ] && status="warning" && message="errors=$errors";
+status="ok" && message="checkin $last_ago"
+[ $diff -gt 86400 ] && status="warning" && message="no checkin last 24h ($last_ago)";
+[ $errors -gt 500 ] && status="warning" && message="too many errors";
 [ $service -ne 1 ] && status="error" && message="service not running";
 
 cat >$json << EOF
@@ -47,7 +47,7 @@ cat >$json << EOF
         "service":"$service",
         "errors":"$errors",
         "height":"",
-        "m1":"last=$last_ago",
+        "m1":"",
         "m2":"",
         "m3":"",
         "url":"$ZG_ALIGNMENT_NODE_SERVICE_IP",
