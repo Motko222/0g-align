@@ -11,6 +11,7 @@ service=$(sudo systemctl status $folder --no-pager | grep "active (running)" | w
 errors=$(journalctl -u $folder.service --since "1 hour ago" --no-hostname -o cat | grep -c -E "rror|ERR")
 last=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Received CheckNodeOperation request" | tail -1 | cut -d "\"" -f 2)
 wallet=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Verified identity result" | tail -1 | awk -F "address=" '{print $NF}')
+response=$(curl $(echo $ZG_ALIGNMENT_NODE_SERVICE_IP | sed 's/:.*/:80/')
 
 # Calculate difference in seconds
 [ $last ] && diff=$(( $(date +%s) - $(date -d "$last" +%s) )) || diff=0
@@ -26,8 +27,9 @@ else
 fi
 
 status="ok" && message="checkin $last_ago"
-[ $diff -gt 86400 ] && status="warning" && message="no checkin last 24h ($last_ago)";
+[ $diff -gt 86400 ] && status="warning" && message="no checkin last 24h";
 [ $diff -eq 0 ] && status="error" && message="no checkin";
+[ "$response" != "OK" ] && status="error" && message="no response";
 [ $errors -gt 500 ] && status="warning" && message="too many errors";
 [ $service -ne 1 ] && status="error" && message="service not running";
 cat >$json << EOF
@@ -49,8 +51,8 @@ cat >$json << EOF
         "service":"$service",
         "errors":"$errors",
         "height":"",
-        "m1":"",
-        "m2":"",
+        "m1":"response=$response",
+        "m2":"checkin=$last_ago",
         "m3":"",
         "url":"$ZG_ALIGNMENT_NODE_SERVICE_IP",
         "url1":"",
