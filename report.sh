@@ -13,9 +13,11 @@ last=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Received Ch
 wallet=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Verified identity result" | tail -1 | awk -F "address=" '{print $NF}')
 
 # Calculate difference in seconds
-diff=$(( $(date +%s) - $(date -d "$last" +%s) ))
+[ $last ] && diff=$(( $(date +%s) - $(date -d "$last" +%s) )) || diff=0
 
-if [ $diff -lt 3600 ]; then
+if [ $diff -eq 0 ]; then
+  last_ago="no checkin"
+elif [ $diff -lt 3600 ]; then
   last_ago="$(( diff / 60 )) minutes ago"
 elif [ $diff -lt 86400 ]; then
   last_ago="$(( diff / 3600 )) hours ago"
@@ -25,9 +27,9 @@ fi
 
 status="ok" && message="checkin $last_ago"
 [ $diff -gt 86400 ] && status="warning" && message="no checkin last 24h ($last_ago)";
+[ $diff -eq 0 ] && status="error" && message="no checkin";
 [ $errors -gt 500 ] && status="warning" && message="too many errors";
 [ $service -ne 1 ] && status="error" && message="service not running";
-
 cat >$json << EOF
 {
   "updated":"$(date --utc +%FT%TZ)",
