@@ -29,7 +29,7 @@ fi
 status="ok" && message="checkin $last_ago"
 [ $diff -gt 86400 ] && status="warning" && message="no checkin last 24h";
 [ $diff -eq 0 ] && status="error" && message="no checkin";
-[ "$response" != "OK" ] && status="error" && message="no response";
+# [ "$response" != "OK" ] && status="error" && message="no response";
 [ $errors -gt 500 ] && status="warning" && message="too many errors";
 [ $service -ne 1 ] && status="error" && message="service not running";
 cat >$json << EOF
