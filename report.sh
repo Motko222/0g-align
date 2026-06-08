@@ -11,7 +11,8 @@ service=$(sudo systemctl status $folder --no-pager | grep "active (running)" | w
 errors=$(journalctl -u $folder.service --since "1 hour ago" --no-hostname -o cat | grep -c -E "rror|ERR")
 last=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Received CheckNodeOperation request" | tail -1 | cut -d "\"" -f 2)
 wallet=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Verified identity result" | tail -1 | awk -F "address=" '{print $NF}')
-response=$(curl $(echo $ZG_ALIGNMENT_NODE_SERVICE_IP | sed 's/\(.*\):.*/\1:80/'))
+_port=$(echo "$ZG_ALIGNMENT_NODE_SERVICE_IP" | grep -oP ':\K[0-9]+$')
+response=$(curl -s --max-time 5 "http://localhost:$_port/health" | jq -r '.data.status // "error"' 2>/dev/null || echo "error")
 
 # Calculate difference in seconds
 [ $last ] && diff=$(( $(date +%s) - $(date -d "$last" +%s) )) || diff=0
