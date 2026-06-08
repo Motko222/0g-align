@@ -6,7 +6,7 @@ json=/root/logs/report-$folder
 source /root/.bash_profile
 source $path/env
 
-version=$()
+version=$(go version -m /root/0g-align/0g-alignment-node 2>/dev/null | grep "vcs.revision" | cut -d= -f2 | cut -c1-7)
 service=$(sudo systemctl status $folder --no-pager | grep "active (running)" | wc -l)
 errors=$(journalctl -u $folder.service --since "1 hour ago" --no-hostname -o cat | grep -c -E "rror|ERR")
 last=$(journalctl -u $folder.service --no-hostname -o cat | grep -E "Received CheckNodeOperation request" | tail -1 | cut -d "\"" -f 2)
